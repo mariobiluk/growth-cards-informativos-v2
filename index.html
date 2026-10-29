@@ -399,32 +399,30 @@ renderCats(); renderGrid();
    MÓDULO ADMINISTRADOR — CONFIGURAÇÃO DAS APIS
    >>> SUBSTITUA PELA SUA API AQUI <<<
    -------------------------------------------------------------------------------------
-   1) jsonbin.io    → crie um bin com o conteúdo inicial:  {"cards": []}
+   1) jsonbin.io  → crie um bin com o conteúdo inicial:  {"cards": []}
       - JSONBIN_MASTER_KEY : painel jsonbin.io → API Keys → "X-Master-Key"
-      - JSONBIN_BIN_ID     : painel jsonbin.io → Bins → ID do bin
-   2) YourImageShare → https://yourimageshare.com/api
-      - YOURIMAGESHARE_API_KEY : painel YourImageShare → API Key
+      - JSONBIN_BIN_ID     : painel jsonbin.io → Bins → ID do bin (ex.: 65f1a2b3c4d5e6f7a8b9c0d1)
+   2) imgbb       → https://api.imgbb.com → "Get API key"
+      - IMGBB_API_KEY
    ===================================================================================== */
-const JSONBIN_MASTER_KEY     = "$2a$10$k5yoNnGcYVgXP5ynEya1L.JCvGLqSB09uhPtFsyFfBuRd2znDNasS"; // <<< SUBSTITUA PELA SUA API AQUI
-const JSONBIN_BIN_ID         = "6ae10d5fac6210605a575730"; // <<< SUBSTITUA PELA SUA API AQUI
-const YOURIMAGESHARE_API_KEY = "1daCa5Z7u5DMPdsw"; // <<< COLE SUA CHAVE AQUI
+const JSONBIN_MASTER_KEY = "$2a$10$k5yoNnGcYVgXP5ynEya1L.JCvGLqSB09uhPtFsyFfBuRd2znDNasS";   // <<< SUBSTITUA PELA SUA API AQUI
+const JSONBIN_BIN_ID     = "6ae10d5fac6210605a575730";    // <<< SUBSTITUA PELA SUA API AQUI
+const IMGBB_API_KEY      = "5c0a6b5494c21e4e392f7fd946d4fd64";        // <<< SUBSTITUA PELA SUA API AQUI
 
 /* Credenciais do administrador (sem backend, sem criptografia) */
 const ADMIN_USER = "admin";
 const ADMIN_PASS = "admin123";
 /* ===================================================================================== */
 
-const JSONBIN_URL    = "https://api.jsonbin.io/v3/b/" + JSONBIN_BIN_ID;
-const YIS_UPLOAD_URL = "https://yourimageshare.com/api";
-const SESSION_KEY    = "gs_cards_admin";
+const JSONBIN_URL = "https://api.jsonbin.io/v3/b/" + JSONBIN_BIN_ID;
+const IMGBB_URL   = "https://api.imgbb.com/1/upload?key=" + IMGBB_API_KEY;
+const SESSION_KEY = "gs_cards_admin";
 
 let isAdmin = false;
 try { isAdmin = sessionStorage.getItem(SESSION_KEY) === "1"; } catch (e) {}
 
 function apiConfigured(){
-  return !/SUBSTITUA/.test(JSONBIN_MASTER_KEY)
-      && !/SUBSTITUA/.test(JSONBIN_BIN_ID)
-      && !/SUBSTITUA/.test(YOURIMAGESHARE_API_KEY);
+  return !/SUBSTITUA/.test(JSONBIN_MASTER_KEY) && !/SUBSTITUA/.test(JSONBIN_BIN_ID) && !/SUBSTITUA/.test(IMGBB_API_KEY);
 }
 
 /* ---------- toast ---------- */
@@ -475,34 +473,13 @@ async function saveRemoteCards(list){
   if (!r.ok) throw new Error("jsonbin respondeu HTTP " + r.status);
 }
 
-/* ---------- YourImageShare: upload ----------
-   Endpoint : POST https://yourimageshare.com/api
-   Auth     : header  X-API-Key
-   Corpo    : multipart/form-data com campo "uploads"
-   Resposta : { type:"success", data:{ src, delete_url } }  (ou data:[ {...} ])
-   -------------------------------------------------- */
-async function uploadToYourImageShare(file){
-  const fd = new FormData();
-  fd.append("uploads", file);
-
-  const r = await fetch(YIS_UPLOAD_URL, {
-    method: "POST",
-    headers: { "X-API-Key": YOURIMAGESHARE_API_KEY },
-    body: fd
-  });
-
+/* ---------- imgbb: upload ---------- */
+async function uploadToImgbb(file){
+  const fd = new FormData(); fd.append("image", file);
+  const r = await fetch(IMGBB_URL, { method: "POST", body: fd });
   const data = await r.json().catch(function(){ return null; });
-
-  if (!r.ok || !data || data.type !== "success") {
-    const msg = (data && data.msg) || ("YourImageShare respondeu HTTP " + r.status);
-    throw new Error(msg);
-  }
-
-  // A API pode devolver objeto único ou array — normalizamos os dois formatos.
-  const fileData = Array.isArray(data.data) ? data.data[0] : data.data;
-  if (!fileData || !fileData.src) throw new Error("Resposta inesperada do YourImageShare.");
-
-  return { url: fileData.src, deleteUrl: fileData.delete_url || "" };
+  if (!r.ok || !data || !data.success) throw new Error((data && data.error && data.error.message) || "imgbb respondeu HTTP " + r.status);
+  return { url: data.data.url, deleteUrl: data.data.delete_url || "" };
 }
 
 /* ---------- login ---------- */
@@ -538,7 +515,7 @@ const catSel = document.getElementById("fCat");
 CATS.forEach(function(n){ const o = document.createElement("option"); o.value = n; o.textContent = n; catSel.appendChild(o); });
 
 document.getElementById("addBtn").addEventListener("click", function(){
-  if (!apiConfigured()) { toast("Configure as chaves do jsonbin e do YourImageShare no código antes de adicionar cards.", false); return; }
+  if (!apiConfigured()) { toast("Configure as chaves do jsonbin e do imgbb no código antes de adicionar cards.", false); return; }
   addModal.classList.add("open"); document.getElementById("fNome").focus();
 });
 document.getElementById("addCancel").addEventListener("click", function(){ addModal.classList.remove("open"); });
@@ -573,7 +550,7 @@ document.getElementById("addForm").addEventListener("submit", async function(e){
   };
   btn.disabled = true; btn.textContent = "Enviando imagem…";
   try {
-    const up = await uploadToYourImageShare(file);
+    const up = await uploadToImgbb(file);
     card.img = up.url; card.imgDelete = up.deleteUrl;
     btn.textContent = "Salvando…";
     await saveRemoteCards(remoteCards().concat([card]));
