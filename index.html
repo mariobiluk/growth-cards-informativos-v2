@@ -65,7 +65,7 @@ h1::after{content:"";display:block;width:64px;height:5px;background:var(--blue);
 .cat .n{min-width:24px;height:24px;padding:0 7px;border-radius:12px;background:var(--bg2);color:var(--muted);font-size:13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center}
 .cat[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
 .cat[aria-pressed="true"] .n{background:rgba(255,255,255,.22);color:#fff}
-.cat:focus-visible,.search input:focus-visible,.dl:focus-visible,.nav:focus-visible,.close:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.cat:focus-visible,.search input:focus-visible,.nav:focus-visible,.close:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 
 /* ---------- Grid ---------- */
 .status{max-width:1120px;margin:22px auto 0;padding:0 20px;color:var(--muted);font-size:14px;font-weight:300}
@@ -82,14 +82,6 @@ h1::after{content:"";display:block;width:64px;height:5px;background:var(--blue);
 .item .cap b{font-weight:600;font-size:16px;line-height:1.15}
 .item .cap small{display:block;color:var(--muted);font-size:13px;font-weight:300;margin-top:2px}
 .item .tag{margin-left:auto;flex:none;font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--blue);border:1.5px solid var(--blue);padding:3px 8px;border-radius:999px;white-space:nowrap}
-.dl{
-  position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;border:0;
-  background:rgba(255,255,255,.94);color:#000;display:inline-flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.25);transition:background .15s,color .15s,transform .15s;z-index:2;
-}
-.dl:hover{background:var(--blue);color:#fff;transform:scale(1.06)}
-.dl svg{width:20px;height:20px}
-.dl.busy{opacity:.6;pointer-events:none}
 .empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)}
 .empty b{display:block;color:var(--text);font-size:20px;font-weight:600;margin-bottom:6px}
 
@@ -152,8 +144,6 @@ footer b{display:block;color:#fff;font-weight:600;font-size:18px;letter-spacing:
   .item .cap b{font-size:13.5px}
   .item .cap small{font-size:11.5px}
   .item .tag{display:none}
-  .dl{width:34px;height:34px;top:7px;right:7px}
-  .dl svg{width:17px;height:17px}
   .cats{gap:8px;padding:0 12px}
   .cat{height:40px;padding:0 13px;font-size:14px;gap:6px}
   .cat .n{min-width:20px;height:20px;font-size:12px}
@@ -280,8 +270,6 @@ footer b{display:block;color:#fff;font-weight:600;font-size:18px;letter-spacing:
 const CATS = ["Proteínas", "Creatinas", "Pré-treinos", "Vitaminas", "Barras"];
 const CARDS = [];
 
-const DL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M4 19h16"/></svg>';
-
 /* ---------- utilidades ---------- */
 const norm = s => (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 const _imgs=document.querySelectorAll("#grid .item img");
@@ -291,7 +279,6 @@ let activeCat = "Todos";
 let query = "";
 let visible = [];
 let current = -1;
-let downloads = null;
 
 /* ---------- categorias ---------- */
 const catsEl = document.getElementById("cats");
@@ -338,94 +325,12 @@ function renderGrid(){
     const el = document.createElement("article");
     el.className="item"; el.tabIndex=0; el.setAttribute("role","button"); el.setAttribute("aria-label",`Abrir ${c.nome}`);
     el.innerHTML = `
-      <button class="dl" type="button" aria-label="Baixar ${c.nome}" title="Baixar card">${DL_ICON}</button>
       <div class="pic"><img src="${c.img}" alt="${c.nome}" loading="lazy" decoding="async"></div>
       <div class="cap"><div><b>${c.nome}</b><small>${c.sub}</small></div><span class="tag">${c.cat}</span></div>`;
-    el.addEventListener("click", e=>{ if(e.target.closest(".dl")) return; openCard(pos); });
+    el.addEventListener("click", ()=>openCard(pos));
     el.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openCard(pos); } });
-    el.querySelector(".dl").addEventListener("click", e=>{ e.stopPropagation(); download(c, e.currentTarget); });
     grid.appendChild(el);
   });
-}
-
-/* ---------- download (PNG gerado a partir da imagem cheia) ---------- */
-/* ---------- download (blob direto, sem redirect) ---------- */
-function slug(s){ return norm(s).replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""); }
-
-function extFromMime(mime){
-  const map = {
-    "image/png":"png", "image/jpeg":"jpg", "image/jpg":"jpg",
-    "image/webp":"webp", "image/gif":"gif", "image/svg+xml":"svg"
-  };
-  return map[(mime || "").toLowerCase()] || "png";
-}
-
-async function fetchAsBlob(src){
-  // fetch cross-origin: só funciona se o servidor enviar cabeçalhos CORS
-  const resp = await fetch(src, { mode: "cors", cache: "no-cache", credentials: "omit" });
-  if (!resp.ok) throw new Error("HTTP " + resp.status);
-  return await resp.blob();
-}
-
-async function toPngBlob(src){
-  // Alternativa: canvas com crossOrigin="anonymous" (obrigatório p/ não contaminar)
-  const img = new Image();
-  img.crossOrigin = "anonymous";
-  img.src = src;
-  await img.decode();
-  const cv = document.createElement("canvas");
-  cv.width  = img.naturalWidth;
-  cv.height = img.naturalHeight;
-  cv.getContext("2d").drawImage(img, 0, 0);
-  return new Promise((resolve, reject) => {
-    cv.toBlob(b => b ? resolve(b) : reject(new Error("canvas tainted — CORS bloqueado")), "image/png");
-  });
-}
-
-async function download(c, btn){
-  if (btn) btn.classList.add("busy");
-  try {
-    let blob, ext = "png";
-    try {
-      // 1ª tentativa: baixar o arquivo original via fetch
-      blob = await fetchAsBlob(c.img);
-      ext  = extFromMime(blob.type);
-    } catch (e1) {
-      try {
-        // 2ª tentativa: converter para PNG via canvas (com crossOrigin)
-        blob = await toPngBlob(c.img);
-        ext  = "png";
-      } catch (e2) {
-        // Último recurso: abre em nova aba para salvar manualmente
-        toast("Não foi possível baixar automaticamente. Abrindo a imagem em nova aba.", false);
-        window.open(c.img, "_blank", "noopener");
-        return;
-      }
-    }
-    const filename = `growth-${slug(c.cat)}-${slug(c.nome)}.${ext}`;
-    if (downloads) {
-      try { await downloads.save({ filename, data: blob }); }
-      catch (err) { if (err && err.code !== "declined") fallbackSave(blob, filename); }
-    } else {
-      fallbackSave(blob, filename);
-    }
-  } catch (err) {
-    toast("Erro ao baixar: " + err.message, false);
-  } finally {
-    if (btn) btn.classList.remove("busy");
-  }
-}
-
-function fallbackSave(blob, filename){
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;         // força download em vez de navegação
-  a.rel = "noopener";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
 /* ---------- destaque ---------- */
@@ -458,10 +363,8 @@ function fill(){
     <h3>Indicado para</h3>
     <p class="ind">${c.indicado}</p>
     <div class="actions">
-      <button class="btn btn-red" id="dlBig" type="button">${DL_ICON} Baixar card</button>
       <button class="btn btn-ghost" id="copyTxt" type="button">Copiar texto</button>
     </div>`;
-  document.getElementById("dlBig").addEventListener("click", e=>download(c, e.currentTarget));
   document.getElementById("copyTxt").addEventListener("click", async e=>{
     const txt = `${c.nome} — ${c.cat}\n\n${c.frase}\n\nBenefícios:\n${c.beneficios.map(b=>"• "+b).join("\n")}\n\nDisponível em: ${c.disponivel.join(" · ")}\n\nIndicado para: ${c.indicado}`;
     try{ await navigator.clipboard.writeText(txt); e.currentTarget.textContent="Copiado"; setTimeout(()=>{ e.currentTarget && (e.currentTarget.textContent="Copiar texto"); },1500); }catch(err){}
@@ -490,7 +393,6 @@ bigImg.addEventListener("click", ()=>{ zoomImg.src=bigImg.src; zoom.classList.ad
 zoom.addEventListener("click", ()=>zoom.classList.remove("open"));
 document.addEventListener("keydown", e=>{ if(e.key==="Escape" && zoom.classList.contains("open")){ zoom.classList.remove("open"); e.stopImmediatePropagation(); } }, true);
 renderCats(); renderGrid();
-try{ if(window.claude && typeof window.claude.use==="function"){ Promise.resolve(window.claude.use("downloads")).then(function(d){ downloads=d||null; }).catch(function(){}); } }catch(err){}
 
 
 /* =====================================================================================
