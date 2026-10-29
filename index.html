@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Growth Supplements — Cards Informativos</title>
+<style>
+@font-face{font-family:'Purista';font-weight:300;font-style:normal;font-display:swap;src:url('fonts/Purista-Light.woff2') format('woff2');}
+@font-face{font-family:'Purista';font-weight:500;font-style:normal;font-display:swap;src:url('fonts/Purista-Medium.woff2') format('woff2');}
+@font-face{font-family:'Purista';font-weight:600;font-style:normal;font-display:swap;src:url('fonts/Purista-SemiBold.woff2') format('woff2');}
+@font-face{font-family:'Purista';font-weight:700;font-style:normal;font-display:swap;src:url('fonts/Purista-Bold.woff2') format('woff2');}
+
+:root{
+  --red:#EA0029; --blue:#00A7E1; --black:#000000;
+  color-scheme:light only; --bg:#f6f6f7; --bg2:#f4f4f4; --line:#e2e2e2; --text:#000000; --muted:#6a6a6a;
+  --card:#ffffff; --shadow:0 10px 30px rgba(0,0,0,.08);
+  --overlay:rgba(0,0,0,.72);
+  --font:"Purista",Arial,Helvetica,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font)}
+body{-webkit-font-smoothing:antialiased;line-height:1.35}
+img{max-width:100%;display:block}
+button{font-family:inherit;cursor:pointer}
+
+/* ---------- Topo ---------- */
+.top{max-width:1120px;margin:0 auto;padding:36px 20px 8px;text-align:center}
+.logo{display:inline-flex;align-items:center;justify-content:center;height:52px}
+.logo img{height:52px;width:auto}
+
+.logo-word{font-weight:700;font-size:26px;letter-spacing:.02em;text-transform:uppercase;line-height:1}
+.logo-word span{color:var(--red)}
+h1{margin:26px 0 0;font-size:clamp(28px,5vw,44px);font-weight:700;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+h1::after{content:"";display:block;width:64px;height:5px;background:var(--blue);margin:14px auto 0;border-radius:3px}
+.tagline{margin:14px 0 0;color:var(--muted);font-size:15px;font-weight:300}
+
+/* ---------- Busca ---------- */
+.search{max-width:680px;margin:28px auto 0;position:relative}
+.search input{
+  width:100%;height:54px;padding:0 48px 0 50px;border:2px solid var(--line);border-radius:14px;
+  background:var(--card);color:var(--text);font-family:inherit;font-size:17px;outline:none;
+  transition:border-color .15s;
+}
+.search input::placeholder{color:var(--muted);font-weight:300}
+.search input:focus{border-color:var(--blue)}
+.search svg{position:absolute;top:50%;transform:translateY(-50%);width:22px;height:22px;color:var(--muted);pointer-events:none}
+.search .ico{left:16px}
+.search .clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:38px;height:38px;border:0;background:transparent;color:var(--muted);border-radius:50%;display:none;font-size:22px;line-height:1}
+.search .clear:hover{background:var(--bg2);color:var(--text)}
+.search.has-text .clear{display:block}
+
+/* ---------- Categorias ---------- */
+.cats{max-width:1120px;margin:22px auto 0;padding:0 20px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.cat{
+  display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 18px;border-radius:12px;
+  border:2px solid var(--line);background:var(--card);color:var(--text);
+  font-size:16px;font-weight:500;letter-spacing:.02em;transition:border-color .15s,background .15s,color .15s;
+}
+.cat:hover{border-color:var(--text)}
+.cat .n{min-width:24px;height:24px;padding:0 7px;border-radius:12px;background:var(--bg2);color:var(--muted);font-size:13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center}
+.cat[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.cat[aria-pressed="true"] .n{background:rgba(255,255,255,.22);color:#fff}
+.cat:focus-visible,.search input:focus-visible,.dl:focus-visible,.nav:focus-visible,.close:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* ---------- Grid ---------- */
+.status{max-width:1120px;margin:22px auto 0;padding:0 20px;color:var(--muted);font-size:14px;font-weight:300}
+.grid{max-width:1120px;margin:10px auto 0;padding:0 20px 60px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.item{
+  position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  box-shadow:0 1px 2px rgba(0,0,0,.04);cursor:pointer;transition:box-shadow .2s,transform .2s;
+}
+.item:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.item:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.item .pic{aspect-ratio:1399/764;background:var(--bg2);overflow:hidden}
+.item .pic img{width:100%;height:100%;object-fit:cover}
+.item .cap{display:flex;align-items:center;gap:10px;padding:12px 14px 13px;border-top:1px solid var(--line)}
+.item .cap b{font-weight:600;font-size:16px;line-height:1.15}
+.item .cap small{display:block;color:var(--muted);font-size:13px;font-weight:300;margin-top:2px}
+.item .tag{margin-left:auto;flex:none;font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--blue);border:1.5px solid var(--blue);padding:3px 8px;border-radius:999px;white-space:nowrap}
+.dl{
+  position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;border:0;
+  background:rgba(255,255,255,.94);color:#000;display:inline-flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);transition:background .15s,color .15s,transform .15s;z-index:2;
+}
+.dl:hover{background:var(--blue);color:#fff;transform:scale(1.06)}
+.dl svg{width:20px;height:20px}
+.dl.busy{opacity:.6;pointer-events:none}
+.empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)}
+.empty b{display:block;color:var(--text);font-size:20px;font-weight:600;margin-bottom:6px}
+
+/* ---------- Destaque (modal) ---------- */
+.modal{position:fixed;inset:0;background:var(--overlay);display:none;z-index:50;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.modal.open{display:flex;align-items:center;justify-content:center}
+.panel{
+  position:relative;width:min(1200px,100%);max-height:100%;background:var(--card);border-radius:20px;overflow:hidden;
+  display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);box-shadow:0 30px 80px rgba(0,0,0,.5);
+}
+.panel .img{background:var(--card);display:flex;align-items:center;justify-content:center;min-height:0}
+.panel .img img{width:100%;height:auto;max-height:calc(100vh - 32px);object-fit:contain}
+.info{padding:30px 28px 28px;overflow:auto;border-left:1px solid var(--line);min-height:0}
+.info .kicker{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
+.info h2{margin:4px 0 0;font-size:26px;font-weight:700;line-height:1.1}
+.info .sub{margin:4px 0 0;color:var(--muted);font-size:15px;font-weight:300}
+.info .frase{margin:18px 0 0;padding:14px 16px;border-left:4px solid var(--blue);background:var(--bg2);border-radius:0 10px 10px 0;font-size:16px;line-height:1.4}
+.info h3{margin:22px 0 8px;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.info ul{margin:0;padding:0;list-style:none}
+.info li{position:relative;padding:5px 0 5px 18px;font-size:15px;line-height:1.35;font-weight:300}
+.info li::before{content:"";position:absolute;left:0;top:12px;width:8px;height:8px;border-radius:50%;background:var(--blue)}
+.info li b,.info p b{font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{border:1.5px solid var(--line);border-radius:999px;padding:4px 11px;font-size:14px;font-weight:500}
+.info .ind{margin:0;font-size:15px;font-weight:300;line-height:1.45}
+.actions{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+.btn{height:46px;padding:0 20px;border-radius:12px;border:0;font-size:15px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px}
+.btn-red{background:var(--blue);color:#fff}
+.btn-red:hover{filter:brightness(.92)}
+.btn-ghost{background:transparent;color:var(--text);border:2px solid var(--line)}
+.btn-ghost:hover{border-color:var(--text)}
+.btn svg{width:18px;height:18px}
+.close{position:absolute;top:12px;right:12px;width:42px;height:42px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:26px;line-height:1;z-index:3}
+.close:hover{background:var(--blue)}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:50px;height:50px;border-radius:50%;border:0;background:rgba(255,255,255,.95);color:#000;box-shadow:0 2px 10px rgba(0,0,0,.35);display:inline-flex;align-items:center;justify-content:center;z-index:3}
+.nav:hover{background:var(--blue);color:#fff}
+.nav svg{width:24px;height:24px}
+.nav.prev{left:12px}.nav.next{right:12px}
+.counter{position:absolute;left:14px;top:14px;background:rgba(0,0,0,.6);color:#fff;font-size:13px;font-weight:600;padding:5px 10px;border-radius:999px;z-index:3}
+.panel .imgwrap{position:relative;min-height:0;display:flex}
+
+/* ---------- Rodapé ---------- */
+footer{background:var(--blue);padding:34px 20px calc(38px + env(safe-area-inset-bottom,0px));text-align:center;color:#fff;font-size:15px;font-weight:300}
+footer b{display:block;color:#fff;font-weight:600;font-size:18px;letter-spacing:.02em;margin-bottom:4px}
+
+/* ---------- Mobile ---------- */
+@media (max-width:860px){
+  .panel{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);width:100%}
+  .panel .img img{max-height:52vh}
+  .info{border-left:0;border-top:1px solid var(--line);padding:20px 18px 24px}
+  .nav{width:42px;height:42px;top:auto;bottom:auto;transform:none}
+  .panel .imgwrap .nav{top:50%;transform:translateY(-50%)}
+}
+@media (max-width:600px){
+  .top{padding:24px 14px 4px}
+  .logo,.logo img{height:40px}
+  .grid{gap:10px;padding:0 12px 48px}
+  .item{border-radius:12px}
+  .item .cap{padding:9px 10px 10px;gap:6px}
+  .item .cap b{font-size:13.5px}
+  .item .cap small{font-size:11.5px}
+  .item .tag{display:none}
+  .dl{width:34px;height:34px;top:7px;right:7px}
+  .dl svg{width:17px;height:17px}
+  .cats{gap:8px;padding:0 12px}
+  .cat{height:40px;padding:0 13px;font-size:14px;gap:6px}
+  .cat .n{min-width:20px;height:20px;font-size:12px}
+  .search{margin-top:22px}
+  .search input{height:50px;font-size:16px}
+  .modal{padding:calc(8px + env(safe-area-inset-top,0px)) 8px calc(8px + env(safe-area-inset-bottom,0px))}
+  .panel{border-radius:14px}
+  .info h2{font-size:22px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;animation:none !important}
+  .item:hover{transform:none}
+}
+.zoom{position:fixed;inset:0;background:#fff;z-index:60;display:none;align-items:center;justify-content:center;cursor:zoom-out;overflow:auto;-webkit-overflow-scrolling:touch}
+.zoom.open{display:flex}
+.zoom img{max-width:none;width:auto;height:auto;min-width:100%;object-fit:contain}
+@media (max-width:860px){.zoom img{width:220vw;max-width:none;min-width:0}}
+.zoom .hint{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:rgba(0,0,0,.7);color:#fff;font-size:13px;padding:7px 14px;border-radius:999px;pointer-events:none}
+.panel .img img{cursor:zoom-in}
+
+/* ---------- Módulo administrador ---------- */
+.admin-link{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:16px;font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;letter-spacing:.04em;text-transform:uppercase;padding:6px 10px;border-radius:8px}
+.admin-link:hover{color:var(--blue);background:var(--card)}
+.top{position:relative}
+.admin-bar{display:none;max-width:1120px;margin:16px auto 0;padding:0 20px;justify-content:center;gap:10px;flex-wrap:wrap}
+.admin-bar .pill{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:999px;background:var(--card);border:1.5px solid var(--line);color:var(--muted);font-size:13px;font-weight:500}
+.btn-danger{background:transparent;color:var(--red);border:2px solid var(--red)}
+.btn-danger:hover{background:var(--red);color:#fff}
+.amodal{position:fixed;inset:0;background:var(--overlay);display:none;z-index:70;padding:16px;overflow:auto}
+.amodal.open{display:flex;align-items:flex-start;justify-content:center}
+.abox{background:var(--card);border-radius:18px;width:min(640px,100%);margin:auto;padding:26px 24px 24px;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.abox h2{margin:0 0 4px;font-size:24px;font-weight:700}
+.abox .hint{margin:0 0 18px;color:var(--muted);font-size:14px;font-weight:300}
+.abox label{display:block;font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+.abox input[type=text],.abox input[type=password],.abox select,.abox textarea{width:100%;border:2px solid var(--line);border-radius:12px;padding:11px 13px;font-family:inherit;font-size:15px;background:var(--card);color:var(--text);outline:none}
+.abox input:focus,.abox select:focus,.abox textarea:focus{border-color:var(--blue)}
+.abox textarea{min-height:88px;resize:vertical}
+.abox input[type=file]{font-family:inherit;font-size:14px}
+.abox .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.abox .err{display:none;color:var(--red);font-size:14px;margin-top:10px}
+.abox .actions{margin-top:22px}
+#fPreview{display:none;margin-top:10px;border-radius:10px;border:1px solid var(--line);max-height:180px;width:auto}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;max-width:min(520px,calc(100% - 32px));opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:90;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--red)}
+@media (max-width:600px){ .abox .row{grid-template-columns:1fr} .abox{padding:20px 16px} .admin-link{right:8px} }
+</style>
+</head>
+<body>
+
+<header class="top">
+<a class="admin-link" href="#" id="adminLink">Admin</a>
+  <div class="logo" id="logo"><img src="logo.png" alt="Growth Supplements"></div>
+  <h1>Cards informativos</h1>
+  <p class="tagline">Material de apoio para influenciadores e prescritores. Toque em um card para ver a ficha completa.</p>
+  <div class="search" id="searchWrap">
+    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="Buscar por produto, categoria ou palavra-chave" autocomplete="off" aria-label="Buscar cards">
+    <button class="clear" id="clearBtn" aria-label="Limpar busca" type="button">×</button>
+  </div>
+  <nav class="cats" id="cats" aria-label="Categorias"><button type="button" class="cat" aria-pressed="true">Todos <span class="n">0</span></button><button type="button" class="cat" aria-pressed="false">Proteínas <span class="n">0</span></button><button type="button" class="cat" aria-pressed="false">Creatinas <span class="n">0</span></button><button type="button" class="cat" aria-pressed="false">Pré-treinos <span class="n">0</span></button><button type="button" class="cat" aria-pressed="false">Vitaminas <span class="n">0</span></button><button type="button" class="cat" aria-pressed="false">Barras <span class="n">0</span></button></nav>
+<div class="admin-bar" id="adminBar"><span class="pill">Modo administrador</span><button class="btn btn-red" type="button" id="addBtn">+ Adicionar card</button></div>
+</header>
+
+<p class="status" id="status" aria-live="polite">Carregando cards…</p>
+<main class="grid" id="grid"></main>
+
+<footer>
+  <b>Somos todos atletas. Somos todos Growth.</b>
+  Growth Supplements
+</footer>
+
+<div class="zoom" id="zoom" aria-hidden="true"><img id="zoomImg" alt=""><span class="hint">Toque para fechar · arraste para ver os detalhes</span></div>
+
+
+<!-- ---------- Módulo administrador ---------- -->
+<div class="amodal" id="loginModal" role="dialog" aria-modal="true" aria-label="Login do administrador">
+  <form class="abox" id="loginForm" autocomplete="off">
+    <h2>Acesso do administrador</h2>
+    <p class="hint">Área para cadastro de novos cards.</p>
+    <label for="loginUser">Usuário</label><input type="text" id="loginUser" required>
+    <label for="loginPass">Senha</label><input type="password" id="loginPass" required>
+    <p class="err" id="loginErr">Usuário ou senha incorretos.</p>
+    <div class="actions"><button class="btn btn-red" type="submit">Entrar</button><button class="btn btn-ghost" type="button" id="loginCancel">Cancelar</button></div>
+  </form>
+</div>
+
+<div class="amodal" id="addModal" role="dialog" aria-modal="true" aria-label="Adicionar card">
+  <form class="abox" id="addForm" autocomplete="off">
+    <h2>Adicionar card</h2>
+    <p class="hint">Os campos abaixo aparecem no grid e no painel lateral do card.</p>
+    <div class="row">
+      <div><label for="fNome">Título (nome do produto)</label><input type="text" id="fNome" required placeholder="Ex.: Whey Protein Isolado"></div>
+      <div><label for="fCat">Categoria</label><select id="fCat"></select></div>
+    </div>
+    <label for="fSub">Subtítulo (linha abaixo do nome)</label><input type="text" id="fSub" required placeholder="Ex.: Máxima pureza proteica">
+    <label for="fFrase">A principal mensagem do produto</label><textarea id="fFrase" required placeholder="Frase principal do card"></textarea>
+    <label for="fBen">Benefícios (um por linha)</label><textarea id="fBen" required placeholder="Até 26g de proteína por porção&#10;Rico em BCAA&#10;Baixo teor de carboidratos"></textarea>
+    <label for="fDisp">Disponível em (um por linha)</label><textarea id="fDisp" required placeholder="1kg&#10;450g"></textarea>
+    <label for="fInd">Produto indicado para</label><textarea id="fInd" required placeholder="Público-alvo do produto"></textarea>
+    <label for="fKw">Palavras-chave para busca (opcional, separadas por espaço)</label><input type="text" id="fKw" placeholder="isolado wpi definicao pureza">
+    <label for="fFile">Imagem do card (PNG ou JPG, 1399×764 recomendado)</label><input type="file" id="fFile" accept="image/png,image/jpeg,image/webp" required>
+    <img id="fPreview" alt="Prévia do card">
+    <div class="actions"><button class="btn btn-red" type="submit" id="addSubmit">Salvar card</button><button class="btn btn-ghost" type="button" id="addCancel">Cancelar</button></div>
+  </form>
+</div>
+<div class="toast" id="toast" aria-live="polite"></div>
+
+<!-- Destaque -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Card em destaque">
+  <div class="panel" id="panel">
+    <div class="imgwrap">
+      <span class="counter" id="counter"></span>
+      <button class="nav prev" id="prevBtn" aria-label="Card anterior" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></button>
+      <div class="img"><img id="bigImg" alt=""></div>
+      <button class="nav next" id="nextBtn" aria-label="Próximo card" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button>
+    </div>
+    <aside class="info" id="info"></aside>
+    <button class="close" id="closeBtn" aria-label="Fechar" type="button">×</button>
+  </div>
+</div>
+
+<script>
+const CATS = ["Proteínas", "Creatinas", "Pré-treinos", "Vitaminas", "Barras"];
+const CARDS = [];
+
+const DL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M4 19h16"/></svg>';
+
+/* ---------- utilidades ---------- */
+const norm = s => (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const _imgs=document.querySelectorAll("#grid .item img");
+CARDS.forEach((c,i)=>{ c.i=i; if(!c.img && _imgs[i]) c.img=_imgs[i].getAttribute("src"); c.search = norm([c.nome,c.sub,c.cat,c.kw,c.frase,c.beneficios.join(" "),c.disponivel.join(" "),c.indicado].join(" ")); });
+
+let activeCat = "Todos";
+let query = "";
+let visible = [];
+let current = -1;
+let downloads = null;
+
+/* ---------- categorias ---------- */
+const catsEl = document.getElementById("cats");
+function renderCats(){
+  const all = ["Todos", ...CATS];
+  catsEl.innerHTML = "";
+  all.forEach(name=>{
+    const n = name==="Todos" ? CARDS.length : CARDS.filter(c=>c.cat===name).length;
+    const b = document.createElement("button");
+    b.type="button"; b.className="cat"; b.setAttribute("aria-pressed", String(name===activeCat));
+    b.innerHTML = `${name} <span class="n">${n}</span>`;
+    b.addEventListener("click", ()=>{ activeCat=name; const zoom=document.getElementById("zoom"), zoomImg=document.getElementById("zoomImg");
+bigImg.addEventListener("click", ()=>{ zoomImg.src=bigImg.src; zoom.classList.add("open"); zoom.scrollLeft=0; });
+zoom.addEventListener("click", ()=>zoom.classList.remove("open"));
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && zoom.classList.contains("open")){ zoom.classList.remove("open"); e.stopImmediatePropagation(); } }, true);
+renderCats(); renderGrid(); });
+    catsEl.appendChild(b);
+  });
+}
+
+/* ---------- busca ---------- */
+const q = document.getElementById("q"), wrap = document.getElementById("searchWrap");
+q.addEventListener("input", ()=>{ query = norm(q.value.trim()); wrap.classList.toggle("has-text", !!q.value); renderGrid(); });
+document.getElementById("clearBtn").addEventListener("click", ()=>{ q.value=""; query=""; wrap.classList.remove("has-text"); renderGrid(); q.focus(); });
+
+function matches(c){
+  if(activeCat!=="Todos" && c.cat!==activeCat) return false;
+  if(!query) return true;
+  return query.split(/\s+/).every(t=>c.search.includes(t));
+}
+
+/* ---------- grid ---------- */
+const grid = document.getElementById("grid"), status = document.getElementById("status");
+function renderGrid(){
+  visible = CARDS.filter(matches);
+  grid.innerHTML = "";
+  const where = activeCat==="Todos" ? "em todas as categorias" : `em ${activeCat}`;
+  status.textContent = visible.length ? `${visible.length} ${visible.length===1?"card":"cards"} ${where}${query?` para “${q.value.trim()}”`:""}` : "";
+  if(!visible.length){
+    grid.innerHTML = CARDS.length ? `<div class="empty"><b>Nenhum card encontrado</b>Tente outro termo ou escolha outra categoria.</div>` : `<div class="empty"><b>Nenhum card cadastrado</b>Entre como administrador para adicionar o primeiro card.</div>`;
+    return;
+  }
+  visible.forEach((c,pos)=>{
+    const el = document.createElement("article");
+    el.className="item"; el.tabIndex=0; el.setAttribute("role","button"); el.setAttribute("aria-label",`Abrir ${c.nome}`);
+    el.innerHTML = `
+      <button class="dl" type="button" aria-label="Baixar ${c.nome}" title="Baixar card">${DL_ICON}</button>
+      <div class="pic"><img src="${c.img}" alt="${c.nome}" loading="lazy" decoding="async"></div>
+      <div class="cap"><div><b>${c.nome}</b><small>${c.sub}</small></div><span class="tag">${c.cat}</span></div>`;
+    el.addEventListener("click", e=>{ if(e.target.closest(".dl")) return; openCard(pos); });
+    el.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openCard(pos); } });
+    el.querySelector(".dl").addEventListener("click", e=>{ e.stopPropagation(); download(c, e.currentTarget); });
+    grid.appendChild(el);
+  });
+}
+
+/* ---------- download (PNG gerado a partir da imagem cheia) ---------- */
+/* ---------- download (blob direto, sem redirect) ---------- */
+function slug(s){ return norm(s).replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""); }
+
+function extFromMime(mime){
+  const map = {
+    "image/png":"png", "image/jpeg":"jpg", "image/jpg":"jpg",
+    "image/webp":"webp", "image/gif":"gif", "image/svg+xml":"svg"
+  };
+  return map[(mime || "").toLowerCase()] || "png";
+}
+
+async function fetchAsBlob(src){
+  // fetch cross-origin: só funciona se o servidor enviar cabeçalhos CORS
+  const resp = await fetch(src, { mode: "cors", cache: "no-cache", credentials: "omit" });
+  if (!resp.ok) throw new Error("HTTP " + resp.status);
+  return await resp.blob();
+}
+
+async function toPngBlob(src){
+  // Alternativa: canvas com crossOrigin="anonymous" (obrigatório p/ não contaminar)
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.src = src;
+  await img.decode();
+  const cv = document.createElement("canvas");
+  cv.width  = img.naturalWidth;
+  cv.height = img.naturalHeight;
+  cv.getContext("2d").drawImage(img, 0, 0);
+  return new Promise((resolve, reject) => {
+    cv.toBlob(b => b ? resolve(b) : reject(new Error("canvas tainted — CORS bloqueado")), "image/png");
+  });
+}
+
+async function download(c, btn){
+  if (btn) btn.classList.add("busy");
+  try {
+    let blob, ext = "png";
+    try {
+      // 1ª tentativa: baixar o arquivo original via fetch
+      blob = await fetchAsBlob(c.img);
+      ext  = extFromMime(blob.type);
+    } catch (e1) {
+      try {
+        // 2ª tentativa: converter para PNG via canvas (com crossOrigin)
+        blob = await toPngBlob(c.img);
+        ext  = "png";
+      } catch (e2) {
+        // Último recurso: abre em nova aba para salvar manualmente
+        toast("Não foi possível baixar automaticamente. Abrindo a imagem em nova aba.", false);
+        window.open(c.img, "_blank", "noopener");
+        return;
+      }
+    }
+    const filename = `growth-${slug(c.cat)}-${slug(c.nome)}.${ext}`;
+    if (downloads) {
+      try { await downloads.save({ filename, data: blob }); }
+      catch (err) { if (err && err.code !== "declined") fallbackSave(blob, filename); }
+    } else {
+      fallbackSave(blob, filename);
+    }
+  } catch (err) {
+    toast("Erro ao baixar: " + err.message, false);
+  } finally {
+    if (btn) btn.classList.remove("busy");
+  }
+}
+
+function fallbackSave(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;         // força download em vez de navegação
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+/* ---------- destaque ---------- */
+const modal = document.getElementById("modal"), bigImg = document.getElementById("bigImg"), info = document.getElementById("info"), counter = document.getElementById("counter");
+let lastFocus = null;
+function openCard(pos){
+  current = pos; lastFocus = document.activeElement;
+  fill(); modal.classList.add("open"); document.body.style.overflow="hidden";
+  document.getElementById("closeBtn").focus();
+}
+function closeCard(){
+  modal.classList.remove("open"); document.body.style.overflow="";
+  if(lastFocus && lastFocus.focus) lastFocus.focus();
+  current=-1;
+}
+function step(d){ if(!visible.length) return; current = (current + d + visible.length) % visible.length; fill(); }
+function fill(){
+  const c = visible[current];
+  bigImg.src = c.img; bigImg.alt = c.nome;
+  counter.textContent = `${current+1} / ${visible.length}`;
+  info.innerHTML = `
+    <div class="kicker">${c.cat}</div>
+    <h2>${c.nome}</h2>
+    <p class="sub">${c.sub}</p>
+    <p class="frase">${c.frase}</p>
+    <h3>Benefícios</h3>
+    <ul>${c.beneficios.map(b=>`<li>${b.replace(/^([^:]{3,40}):/,"<b>$1:</b>")}</li>`).join("")}</ul>
+    <h3>Disponível em</h3>
+    <div class="chips">${c.disponivel.map(d=>`<span>${d}</span>`).join("")}</div>
+    <h3>Indicado para</h3>
+    <p class="ind">${c.indicado}</p>
+    <div class="actions">
+      <button class="btn btn-red" id="dlBig" type="button">${DL_ICON} Baixar card</button>
+      <button class="btn btn-ghost" id="copyTxt" type="button">Copiar texto</button>
+    </div>`;
+  document.getElementById("dlBig").addEventListener("click", e=>download(c, e.currentTarget));
+  document.getElementById("copyTxt").addEventListener("click", async e=>{
+    const txt = `${c.nome} — ${c.cat}\n\n${c.frase}\n\nBenefícios:\n${c.beneficios.map(b=>"• "+b).join("\n")}\n\nDisponível em: ${c.disponivel.join(" · ")}\n\nIndicado para: ${c.indicado}`;
+    try{ await navigator.clipboard.writeText(txt); e.currentTarget.textContent="Copiado"; setTimeout(()=>{ e.currentTarget && (e.currentTarget.textContent="Copiar texto"); },1500); }catch(err){}
+  });
+  info.scrollTop = 0;
+  // pré-carrega vizinhos
+  [1,-1].forEach(d=>{ const n = visible[(current+d+visible.length)%visible.length]; if(n){ const im=new Image(); im.src=n.img; } });
+}
+document.getElementById("closeBtn").addEventListener("click", closeCard);
+document.getElementById("prevBtn").addEventListener("click", ()=>step(-1));
+document.getElementById("nextBtn").addEventListener("click", ()=>step(1));
+modal.addEventListener("click", e=>{ if(e.target===modal) closeCard(); });
+document.addEventListener("keydown", e=>{
+  if(!modal.classList.contains("open")) return;
+  if(e.key==="Escape") closeCard();
+  else if(e.key==="ArrowRight") step(1);
+  else if(e.key==="ArrowLeft") step(-1);
+});
+// swipe no mobile
+let tx=null;
+modal.addEventListener("touchstart", e=>{ tx=e.touches[0].clientX; }, {passive:true});
+modal.addEventListener("touchend", e=>{ if(tx===null) return; const dx=e.changedTouches[0].clientX-tx; tx=null; if(Math.abs(dx)>60) step(dx<0?1:-1); }, {passive:true});
+
+const zoom=document.getElementById("zoom"), zoomImg=document.getElementById("zoomImg");
+bigImg.addEventListener("click", ()=>{ zoomImg.src=bigImg.src; zoom.classList.add("open"); zoom.scrollLeft=0; });
+zoom.addEventListener("click", ()=>zoom.classList.remove("open"));
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && zoom.classList.contains("open")){ zoom.classList.remove("open"); e.stopImmediatePropagation(); } }, true);
+renderCats(); renderGrid();
+try{ if(window.claude && typeof window.claude.use==="function"){ Promise.resolve(window.claude.use("downloads")).then(function(d){ downloads=d||null; }).catch(function(){}); } }catch(err){}
+
+
+/* =====================================================================================
+   MÓDULO ADMINISTRADOR — CONFIGURAÇÃO DAS APIS
+   >>> SUBSTITUA PELA SUA API AQUI <<<
+   -------------------------------------------------------------------------------------
+   1) jsonbin.io    → crie um bin com o conteúdo inicial:  {"cards": []}
+      - JSONBIN_MASTER_KEY : painel jsonbin.io → API Keys → "X-Master-Key"
+      - JSONBIN_BIN_ID     : painel jsonbin.io → Bins → ID do bin
+   2) YourImageShare → https://yourimageshare.com/api
+      - YOURIMAGESHARE_API_KEY : painel YourImageShare → API Key
+   ===================================================================================== */
+const JSONBIN_MASTER_KEY     = "$2a$10$k5yoNnGcYVgXP5ynEya1L.JCvGLqSB09uhPtFsyFfBuRd2znDNasS"; // <<< SUBSTITUA PELA SUA API AQUI
+const JSONBIN_BIN_ID         = "6ae10d5fac6210605a575730"; // <<< SUBSTITUA PELA SUA API AQUI
+const YOURIMAGESHARE_API_KEY = "1daCa5Z7u5DMPdsw"; // <<< COLE SUA CHAVE AQUI
+
+/* Credenciais do administrador (sem backend, sem criptografia) */
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "admin123";
+/* ===================================================================================== */
+
+const JSONBIN_URL    = "https://api.jsonbin.io/v3/b/" + JSONBIN_BIN_ID;
+const YIS_UPLOAD_URL = "https://yourimageshare.com/api";
+const SESSION_KEY    = "gs_cards_admin";
+
+let isAdmin = false;
+try { isAdmin = sessionStorage.getItem(SESSION_KEY) === "1"; } catch (e) {}
+
+function apiConfigured(){
+  return !/SUBSTITUA/.test(JSONBIN_MASTER_KEY)
+      && !/SUBSTITUA/.test(JSONBIN_BIN_ID)
+      && !/SUBSTITUA/.test(YOURIMAGESHARE_API_KEY);
+}
+
+/* ---------- toast ---------- */
+const toastEl = document.getElementById("toast");
+let toastTimer = null;
+function toast(msg, ok){
+  toastEl.textContent = msg; toastEl.className = "toast show" + (ok === false ? " err" : "");
+  clearTimeout(toastTimer); toastTimer = setTimeout(function(){ toastEl.className = "toast"; }, 3800);
+}
+
+/* ---------- indexação (reaproveita a mesma lógica dos cards fixos) ---------- */
+function indexCard(c, i){
+  c.i = i;
+  c.search = norm([c.nome, c.sub, c.cat, c.kw, c.frase, (c.beneficios || []).join(" "), (c.disponivel || []).join(" "), c.indicado].join(" "));
+}
+function reindex(){ CARDS.forEach(indexCard); }
+
+/* ---------- jsonbin: carregar / salvar ---------- */
+function remoteCards(){ return CARDS.filter(function(c){ return c.remote; }); }
+
+const statusEl = document.getElementById("status");
+async function loadRemoteCards(){
+  if (!apiConfigured()) { renderGrid(); statusEl.textContent = "As chaves das APIs ainda não foram configuradas no código."; return; }
+  statusEl.textContent = "Carregando cards…";
+  try {
+    const r = await fetch(JSONBIN_URL + "/latest", { headers: { "X-Master-Key": JSONBIN_MASTER_KEY, "X-Bin-Meta": "false" } });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    const list = Array.isArray(data) ? data : (data && Array.isArray(data.cards) ? data.cards : []);
+    list.forEach(function(c){ c.remote = true; CARDS.push(c); });
+    reindex(); renderCats(); renderGrid();
+  } catch (err) {
+    console.warn("Não foi possível carregar os cards do jsonbin:", err);
+    renderGrid(); statusEl.textContent = "Não foi possível carregar os cards. Verifique as chaves das APIs e a conexão.";
+  }
+}
+
+async function saveRemoteCards(list){
+  const clean = list.map(function(c){
+    return { id: c.id, nome: c.nome, sub: c.sub, cat: c.cat, frase: c.frase, beneficios: c.beneficios, disponivel: c.disponivel,
+             indicado: c.indicado, kw: c.kw, img: c.img, imgDelete: c.imgDelete || "", createdAt: c.createdAt || "" };
+  });
+  const r = await fetch(JSONBIN_URL, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", "X-Master-Key": JSONBIN_MASTER_KEY },
+    body: JSON.stringify({ cards: clean })
+  });
+  if (!r.ok) throw new Error("jsonbin respondeu HTTP " + r.status);
+}
+
+/* ---------- YourImageShare: upload ----------
+   Endpoint : POST https://yourimageshare.com/api
+   Auth     : header  X-API-Key
+   Corpo    : multipart/form-data com campo "uploads"
+   Resposta : { type:"success", data:{ src, delete_url } }  (ou data:[ {...} ])
+   -------------------------------------------------- */
+async function uploadToYourImageShare(file){
+  const fd = new FormData();
+  fd.append("uploads", file);
+
+  const r = await fetch(YIS_UPLOAD_URL, {
+    method: "POST",
+    headers: { "X-API-Key": YOURIMAGESHARE_API_KEY },
+    body: fd
+  });
+
+  const data = await r.json().catch(function(){ return null; });
+
+  if (!r.ok || !data || data.type !== "success") {
+    const msg = (data && data.msg) || ("YourImageShare respondeu HTTP " + r.status);
+    throw new Error(msg);
+  }
+
+  // A API pode devolver objeto único ou array — normalizamos os dois formatos.
+  const fileData = Array.isArray(data.data) ? data.data[0] : data.data;
+  if (!fileData || !fileData.src) throw new Error("Resposta inesperada do YourImageShare.");
+
+  return { url: fileData.src, deleteUrl: fileData.delete_url || "" };
+}
+
+/* ---------- login ---------- */
+const adminLink = document.getElementById("adminLink"), loginModal = document.getElementById("loginModal"),
+      adminBar = document.getElementById("adminBar"), addModal = document.getElementById("addModal");
+
+function applyAdminState(){
+  adminBar.style.display = isAdmin ? "flex" : "none";
+  adminLink.textContent = isAdmin ? "Sair" : "Admin";
+  if (document.getElementById("modal").classList.contains("open") && current >= 0) fill();
+}
+adminLink.addEventListener("click", function(e){
+  e.preventDefault();
+  if (isAdmin) { isAdmin = false; try { sessionStorage.removeItem(SESSION_KEY); } catch (err) {} applyAdminState(); toast("Sessão encerrada."); return; }
+  loginModal.classList.add("open"); document.getElementById("loginUser").focus();
+});
+document.getElementById("loginCancel").addEventListener("click", function(){ loginModal.classList.remove("open"); });
+loginModal.addEventListener("click", function(e){ if (e.target === loginModal) loginModal.classList.remove("open"); });
+document.getElementById("loginForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  const u = document.getElementById("loginUser").value.trim(), p = document.getElementById("loginPass").value;
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    isAdmin = true; try { sessionStorage.setItem(SESSION_KEY, "1"); } catch (err) {}
+    loginModal.classList.remove("open"); document.getElementById("loginForm").reset(); applyAdminState();
+    toast(apiConfigured() ? "Login realizado." : "Login realizado. Atenção: as chaves das APIs ainda não foram configuradas no código.", apiConfigured());
+  } else {
+    document.getElementById("loginErr").style.display = "block";
+  }
+});
+
+/* ---------- adicionar card ---------- */
+const catSel = document.getElementById("fCat");
+CATS.forEach(function(n){ const o = document.createElement("option"); o.value = n; o.textContent = n; catSel.appendChild(o); });
+
+document.getElementById("addBtn").addEventListener("click", function(){
+  if (!apiConfigured()) { toast("Configure as chaves do jsonbin e do YourImageShare no código antes de adicionar cards.", false); return; }
+  addModal.classList.add("open"); document.getElementById("fNome").focus();
+});
+document.getElementById("addCancel").addEventListener("click", function(){ addModal.classList.remove("open"); });
+addModal.addEventListener("click", function(e){ if (e.target === addModal) addModal.classList.remove("open"); });
+
+const fFile = document.getElementById("fFile"), fPreview = document.getElementById("fPreview");
+fFile.addEventListener("change", function(){
+  const f = fFile.files[0];
+  if (!f) { fPreview.style.display = "none"; return; }
+  fPreview.src = URL.createObjectURL(f); fPreview.style.display = "block";
+});
+
+const lines = function(v){ return v.split(/\r?\n/).map(function(s){ return s.trim(); }).filter(Boolean); };
+
+document.getElementById("addForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+  const btn = document.getElementById("addSubmit");
+  const file = fFile.files[0];
+  if (!file) { toast("Selecione a imagem do card.", false); return; }
+  const card = {
+    id: "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    nome: document.getElementById("fNome").value.trim(),
+    sub: document.getElementById("fSub").value.trim(),
+    cat: catSel.value,
+    frase: document.getElementById("fFrase").value.trim(),
+    beneficios: lines(document.getElementById("fBen").value),
+    disponivel: lines(document.getElementById("fDisp").value),
+    indicado: document.getElementById("fInd").value.trim(),
+    kw: document.getElementById("fKw").value.trim(),
+    createdAt: new Date().toISOString(),
+    remote: true
+  };
+  btn.disabled = true; btn.textContent = "Enviando imagem…";
+  try {
+    const up = await uploadToYourImageShare(file);
+    card.img = up.url; card.imgDelete = up.deleteUrl;
+    btn.textContent = "Salvando…";
+    await saveRemoteCards(remoteCards().concat([card]));
+    CARDS.push(card); reindex(); renderCats(); renderGrid();
+    addModal.classList.remove("open"); document.getElementById("addForm").reset(); fPreview.style.display = "none";
+    toast("Card “" + card.nome + "” adicionado.");
+  } catch (err) {
+    toast("Erro ao salvar: " + err.message, false);
+  } finally {
+    btn.disabled = false; btn.textContent = "Salvar card";
+  }
+});
+
+/* ---------- excluir card (só os adicionados pelo admin) ---------- */
+async function deleteRemoteCard(c){
+  if (!confirm("Excluir o card “" + c.nome + "”? Esta ação remove o card do site.")) return;
+  try {
+    await saveRemoteCards(remoteCards().filter(function(x){ return x.id !== c.id; }));
+    const pos = CARDS.indexOf(c); if (pos >= 0) CARDS.splice(pos, 1);
+    reindex(); closeCard(); renderCats(); renderGrid();
+    toast("Card excluído.");
+  } catch (err) {
+    toast("Erro ao excluir: " + err.message, false);
+  }
+}
+
+/* O botão de excluir é injetado no painel lateral após cada preenchimento */
+const _fillOriginal = fill;
+fill = function(){
+  _fillOriginal();
+  const c = visible[current];
+  if (isAdmin && c && c.remote) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "btn btn-danger"; b.textContent = "Excluir card";
+    b.addEventListener("click", function(){ deleteRemoteCard(c); });
+    const act = document.querySelector("#info .actions"); if (act) act.appendChild(b);
+  }
+};
+
+applyAdminState();
+loadRemoteCards();
+
+</script>
+</body>
+</html>
