@@ -189,6 +189,18 @@ footer b{display:block;color:#fff;font-weight:600;font-size:18px;letter-spacing:
 .toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;max-width:min(520px,calc(100% - 32px));opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:90;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.err{background:var(--red)}
+.catadd{display:flex;gap:10px;align-items:stretch}
+.catadd input{flex:1;min-width:0}
+.catadd .btn{flex:none}
+.catlist{list-style:none;margin:16px 0 0;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.catlist li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line)}
+.catlist li:first-child{border-top:0}
+.catlist .nm{font-size:16px;font-weight:500;overflow-wrap:anywhere}
+.catlist .ct{margin-left:auto;flex:none;color:var(--muted);font-size:13px;font-weight:300;white-space:nowrap}
+.catlist .btn{flex:none;height:36px;padding:0 12px;font-size:13px}
+.catlist .btn:disabled{opacity:.4;cursor:not-allowed}
+.catlist .btn:disabled:hover{background:transparent;color:var(--red)}
+.catlist .none{color:var(--muted);font-weight:300;font-size:14px}
 @media (max-width:600px){ .abox .row{grid-template-columns:1fr} .abox{padding:20px 16px} .admin-link{right:8px} }
 </style>
 </head>
@@ -205,7 +217,7 @@ footer b{display:block;color:#fff;font-weight:600;font-size:18px;letter-spacing:
     <button class="clear" id="clearBtn" aria-label="Limpar busca" type="button">×</button>
   </div>
   <nav class="cats" id="cats" aria-label="Categorias"><button type="button" class="cat" aria-pressed="true">Todos <span class="n">0</span></button><button type="button" class="cat" aria-pressed="false">Proteínas <span class="n">0</span></button><button type="button" class="cat" aria-pressed="false">Creatinas <span class="n">0</span></button><button type="button" class="cat" aria-pressed="false">Pré-treinos <span class="n">0</span></button><button type="button" class="cat" aria-pressed="false">Vitaminas <span class="n">0</span></button><button type="button" class="cat" aria-pressed="false">Barras <span class="n">0</span></button></nav>
-<div class="admin-bar" id="adminBar"><span class="pill">Modo administrador</span><button class="btn btn-red" type="button" id="addBtn">+ Adicionar card</button></div>
+<div class="admin-bar" id="adminBar"><span class="pill">Modo administrador</span><button class="btn btn-red" type="button" id="addBtn">+ Adicionar card</button><button class="btn btn-ghost" type="button" id="catBtn">Gerenciar categorias</button></div>
 </header>
 
 <p class="status" id="status" aria-live="polite">Carregando cards…</p>
@@ -249,6 +261,19 @@ footer b{display:block;color:#fff;font-weight:600;font-size:18px;letter-spacing:
     <img id="fPreview" alt="Prévia do card">
     <div class="actions"><button class="btn btn-red" type="submit" id="addSubmit">Salvar card</button><button class="btn btn-ghost" type="button" id="addCancel">Cancelar</button></div>
   </form>
+</div>
+<div class="amodal" id="catModal" role="dialog" aria-modal="true" aria-label="Gerenciar categorias">
+  <div class="abox">
+    <h2>Gerenciar categorias</h2>
+    <p class="hint">As categorias aparecem como filtros no topo da página e na lista de categorias ao adicionar um card.</p>
+    <form id="catForm" autocomplete="off">
+      <label for="catName">Nova categoria</label>
+      <div class="catadd"><input type="text" id="catName" required maxlength="40" placeholder="Ex.: Aminoácidos"><button class="btn btn-red" type="submit" id="catSubmit">Adicionar</button></div>
+    </form>
+    <label>Categorias cadastradas</label>
+    <ul class="catlist" id="catList"></ul>
+    <div class="actions"><button class="btn btn-ghost" type="button" id="catClose">Fechar</button></div>
+  </div>
 </div>
 <div class="toast" id="toast" aria-live="polite"></div>
 
@@ -444,6 +469,7 @@ function reindex(){ CARDS.forEach(indexCard); }
 function remoteCards(){ return CARDS.filter(function(c){ return c.remote; }); }
 
 const statusEl = document.getElementById("status");
+let remoteLoaded = false;
 async function loadRemoteCards(){
   if (!apiConfigured()) { renderGrid(); statusEl.textContent = "As chaves das APIs ainda não foram configuradas no código."; return; }
   statusEl.textContent = "Carregando cards…";
@@ -453,6 +479,15 @@ async function loadRemoteCards(){
     const data = await r.json();
     const list = Array.isArray(data) ? data : (data && Array.isArray(data.cards) ? data.cards : []);
     list.forEach(function(c){ c.remote = true; CARDS.push(c); });
+    /* categorias: se o bin ainda não tiver a chave "categorias", mantém as padrão do código */
+    if (data && !Array.isArray(data) && Array.isArray(data.categorias)) {
+      const saved = data.categorias.map(function(n){ return (n || "").toString().trim(); }).filter(Boolean);
+      CATS.splice.apply(CATS, [0, CATS.length].concat(saved));
+    }
+    /* um card nunca fica sem filtro: categoria usada por card e ausente da lista é reincluída */
+    CARDS.forEach(function(c){ if (c.cat && CATS.indexOf(c.cat) < 0) CATS.push(c.cat); });
+    remoteLoaded = true;
+    renderCatSelect();
     reindex(); renderCats(); renderGrid();
   } catch (err) {
     console.warn("Não foi possível carregar os cards do jsonbin:", err);
@@ -460,7 +495,7 @@ async function loadRemoteCards(){
   }
 }
 
-async function saveRemoteCards(list){
+async function saveRemoteCards(list, cats){
   const clean = list.map(function(c){
     return { id: c.id, nome: c.nome, sub: c.sub, cat: c.cat, frase: c.frase, beneficios: c.beneficios, disponivel: c.disponivel,
              indicado: c.indicado, kw: c.kw, img: c.img, imgDelete: c.imgDelete || "", createdAt: c.createdAt || "" };
@@ -468,7 +503,7 @@ async function saveRemoteCards(list){
   const r = await fetch(JSONBIN_URL, {
     method: "PUT",
     headers: { "Content-Type": "application/json", "X-Master-Key": JSONBIN_MASTER_KEY },
-    body: JSON.stringify({ cards: clean })
+    body: JSON.stringify({ cards: clean, categorias: cats || CATS.slice() })
   });
   if (!r.ok) throw new Error("jsonbin respondeu HTTP " + r.status);
 }
@@ -512,10 +547,17 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
 
 /* ---------- adicionar card ---------- */
 const catSel = document.getElementById("fCat");
-CATS.forEach(function(n){ const o = document.createElement("option"); o.value = n; o.textContent = n; catSel.appendChild(o); });
+function renderCatSelect(){
+  const prev = catSel.value;
+  catSel.innerHTML = "";
+  CATS.forEach(function(n){ const o = document.createElement("option"); o.value = n; o.textContent = n; catSel.appendChild(o); });
+  if (CATS.indexOf(prev) >= 0) catSel.value = prev;
+}
+renderCatSelect();
 
 document.getElementById("addBtn").addEventListener("click", function(){
   if (!apiConfigured()) { toast("Configure as chaves do jsonbin e do imgbb no código antes de adicionar cards.", false); return; }
+  if (!CATS.length) { toast("Cadastre pelo menos uma categoria antes de adicionar cards.", false); return; }
   addModal.classList.add("open"); document.getElementById("fNome").focus();
 });
 document.getElementById("addCancel").addEventListener("click", function(){ addModal.classList.remove("open"); });
@@ -589,6 +631,86 @@ fill = function(){
     const act = document.querySelector("#info .actions"); if (act) act.appendChild(b);
   }
 };
+
+/* ---------- gerenciar categorias (adicionar / remover) ---------- */
+const catModal = document.getElementById("catModal"), catList = document.getElementById("catList"), catName = document.getElementById("catName");
+let catBusy = false;
+
+function cardsIn(name){ return CARDS.filter(function(c){ return c.cat === name; }).length; }
+
+function renderCatList(){
+  catList.innerHTML = "";
+  if (!CATS.length) { const li = document.createElement("li"); li.className = "none"; li.textContent = "Nenhuma categoria cadastrada."; catList.appendChild(li); return; }
+  CATS.forEach(function(name){
+    const n = cardsIn(name);
+    const li = document.createElement("li");
+    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = name;
+    const ct = document.createElement("span"); ct.className = "ct"; ct.textContent = n + (n === 1 ? " card" : " cards");
+    const b = document.createElement("button"); b.type = "button"; b.className = "btn btn-danger"; b.textContent = "Remover";
+    b.setAttribute("aria-label", "Remover categoria " + name);
+    if (n) { b.disabled = true; b.title = "Exclua os cards desta categoria antes de removê-la."; }
+    b.addEventListener("click", function(){ removeCategory(name); });
+    li.appendChild(nm); li.appendChild(ct); li.appendChild(b); catList.appendChild(li);
+  });
+}
+
+/* Salva a nova lista no jsonbin e só então atualiza a tela */
+async function commitCategories(next){
+  await saveRemoteCards(remoteCards(), next);
+  CATS.splice.apply(CATS, [0, CATS.length].concat(next));
+  if (activeCat !== "Todos" && CATS.indexOf(activeCat) < 0) activeCat = "Todos";
+  renderCatSelect(); renderCatList(); renderCats(); renderGrid();
+}
+
+function catsReady(){
+  if (!apiConfigured()) { toast("Configure as chaves do jsonbin e do imgbb no código antes de alterar categorias.", false); return false; }
+  if (!remoteLoaded) { toast("Os dados ainda não foram carregados do servidor. Recarregue a página e tente de novo.", false); return false; }
+  return true;
+}
+
+document.getElementById("catBtn").addEventListener("click", function(){
+  if (!catsReady()) return;
+  renderCatList(); catModal.classList.add("open"); catName.focus();
+});
+document.getElementById("catClose").addEventListener("click", function(){ catModal.classList.remove("open"); });
+catModal.addEventListener("click", function(e){ if (e.target === catModal) catModal.classList.remove("open"); });
+
+document.getElementById("catForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+  if (catBusy || !catsReady()) return;
+  const name = catName.value.trim().replace(/\s+/g, " ");
+  if (!name) return;
+  if (/[<>]/.test(name)) { toast("O nome da categoria não pode conter os caracteres < ou >.", false); return; }
+  if (norm(name) === "todos") { toast("“Todos” já é o filtro geral e não pode ser usado como categoria.", false); return; }
+  if (CATS.some(function(c){ return norm(c) === norm(name); })) { toast("A categoria “" + name + "” já existe.", false); return; }
+  const btn = document.getElementById("catSubmit");
+  catBusy = true; btn.disabled = true; btn.textContent = "Salvando…";
+  try {
+    await commitCategories(CATS.concat([name]));
+    catName.value = ""; catName.focus();
+    toast("Categoria “" + name + "” adicionada.");
+  } catch (err) {
+    toast("Erro ao salvar: " + err.message, false);
+  } finally {
+    catBusy = false; btn.disabled = false; btn.textContent = "Adicionar";
+  }
+});
+
+async function removeCategory(name){
+  if (catBusy || !catsReady()) return;
+  const n = cardsIn(name);
+  if (n) { toast("A categoria “" + name + "” tem " + n + (n === 1 ? " card" : " cards") + ". Exclua os cards antes de removê-la.", false); return; }
+  if (!confirm("Remover a categoria “" + name + "”?")) return;
+  catBusy = true;
+  try {
+    await commitCategories(CATS.filter(function(c){ return c !== name; }));
+    toast("Categoria removida.");
+  } catch (err) {
+    toast("Erro ao remover: " + err.message, false);
+  } finally {
+    catBusy = false;
+  }
+}
 
 applyAdminState();
 loadRemoteCards();
